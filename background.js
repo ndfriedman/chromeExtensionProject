@@ -27,7 +27,7 @@ function adjust_window_url(tabId){
   //$("#dealUrl").href = 'https//:msnbc.com'
 }
 
-function launch_window(){
+function launch_window(url){
   alert('launch commencing')
   chrome.tabs.create({
             url: chrome.extension.getURL('popup.html'),
@@ -40,12 +40,30 @@ function launch_window(){
                 focused: true,
                 // incognito, top, left, ...
             });
-            alert(tab.id)
-            alert('message into the ether')
-            //chrome.runtime.sendMessage(tab.id, {type:'babadook'})
+
+            //add a listener to communicate
+            //respond to the handshake with a url
+            chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
+
+              chrome.runtime.sendMessage(
+                  {type: 'adjustData', data:{'url': url}},
+                  function(response){//DO nothing?? 
+                  });
+            });
           }
   )
 }
+
+/*chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
+
+  alert(message.data)
+  chrome.runtime.sendMessage(
+    {type: 'adjustData', data:{'url': 'https://www.msnbc.com'}},
+    function(response){
+      //DO nothing??  
+    });
+});
+*/
 
 //Function that opens the deals page
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -63,10 +81,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
       $.post('https://noahfriedman.pythonanywhere.com/receiver', JSON.stringify(request.info), 
         function(data, status){
-          alert('postmates')
-          alert(data)
-          launch_window()
+          data = JSON.parse(data)
+          launch_window(data['url'])
         })
     }
 });
 
+
+//chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
+//    chrome.tabs.executeScript(null,{file:"popup.js"});
+//});
