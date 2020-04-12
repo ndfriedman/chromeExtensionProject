@@ -20,5 +20,9 @@
    "background": {
   		"scripts": ["jquery-3.4.1.js", "background.js"],
       "persistent": false
-   }	
+   }
 }
+
+//"permissions": [
+//    "*://amazon.com/*", "tabs", "webNavigation"
+//  ] 
