@@ -1,19 +1,18 @@
 
-alert('cannibalism')
+//initiate the connection with the background.js with a handshake
+chrome.runtime.sendMessage({data:"Handshake"},function(response){
+	
+});
 
-//var x = $("#dealUrl")
-//alert(x)
-
-chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
-	    alert('hey there delilah')
-	    if (request.type === 'babadook') {
+chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
+	if (message.type === 'adjustData') {
+			//change HTML with jquery
 	    	$(document).ready(function(){
-	    		alert('hello from the farm')
-	    		$("#dealUrl").attr("href", 'https://www.cnn.com/');
+	    		//change url
+	    		$("#dealUrl").attr("href", message.data['url']);
 			})
-		}
-})
+	}
 
+});
  
  
