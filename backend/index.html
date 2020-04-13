@@ -1,0 +1,28 @@
+pt src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  2 <script type="text/javascript">                                                                         
+  3 // setup some JSON to use
+  4 var cars = [
+  5     { "make":"Porsche", "model":"911S" },
+  6     { "make":"Mercedes-Benz", "model":"220SE" },
+  7     { "make":"Jaguar","model": "Mark VII" }
+  8 ];
+  9 
+ 10 window.onload = function() {
+ 11     // setup the button click
+ 12     document.getElementById("theButton").onclick = function() {
+ 13         console.log('clicked')
+ 14         doWork()
+ 15     };
+ 16 }
+ 17 
+ 18 function doWork() {
+ 19     // ajax the JSON to the server
+ 20     $.post("receiver", JSON.stringify(cars), 
+ 21         function(data, status){
+ 22             alert(data)
+ 23         });
+ 24     // stop link reloading the page
+ 25  event.preventDefault();
+ 26 }
+ 27 </script>
+index.html [tabs]
