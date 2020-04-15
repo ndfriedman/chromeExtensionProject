@@ -10,47 +10,15 @@ console.log(getText());
 
 
 //ACTION FUNCTIONS
+//WHEN THE ICON IS CLICKED OPEN THE LOGIN WINDOW
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if( request.message === "clicked_browser_action" ) {
-      var firstHref = $("a[href^='http']").eq(0).attr("href");
-
-      alert('hi there you clicked, taking you to barnes and noble for a better deal');
-
-      chrome.runtime.sendMessage({"message": "open_new_tab", "url": 'https://www.barnesandnoble.com/'});
+      chrome.runtime.sendMessage({type:'open_login_info'})
     }
   }
 );
 
-
-//SERVER / FLASK FUNCTIONALITY
-
-//renders the results of our post query to the user
-function render_results(results){
-	alert(results)
-}
-
-//TODO make it work for more than one item
-function doWork(itemName, itemPrice) {
-
-	var items = [{'itemName': itemName, 'price': itemPrice}]
-	console.log(JSON.stringify(items))
-	// ajax the JSON to the server
-	$.post('https://noahfriedman.pythonanywhere.com/receiver', JSON.stringify(items), 
-		function(data, status){
-			console.log(data)
-			chrome.runtime.sendMessage({type:'open_deals_page', info:data}) //, 
-				//function (response) {
-				//	console.log(response);
-    		//})
-
-			//console.log(document.querySelectorAll('*[id]'))
-			//document.getElementById('dealUrl').attribute = data['url']
-			alert('completed')
-		});
-	// stop link reloading the page
- //event.preventDefault();
-}
 
 //THIS IS THE CODE THAT RUNS WHEN YOU LAND ON THE PROPER WEBPAGE (AMAZON checkout)
 
