@@ -7,28 +7,46 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   	});
 });
 
+
+//LOGIN INFO CODE
+//In the future we will actually use O-auth as detailed here https://developer.chrome.com/extensions/tut_oauth
+//For now we can just click on the extension and manually set our username
+chrome.storage.local.set({
+    'username': 'notSpecified'
+}, function () {
+    console.log("Storage Succesful");
+});
+
+//LISTENER TO OPEN THE LOGIN WINDOW--called by content.js who is listening for a clicked action
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if( request.message === "open_new_tab" ) {
-      chrome.tabs.create({"url": request.url});
-    }
-  }
-);
+    if( request.type === "open_login_info" ) {
+        chrome.tabs.create({
+            url: chrome.extension.getURL('login.html'),
+            active: false
+        }, function(tab) {
+                chrome.windows.create({
+                tabId: tab.id,
+                type: 'panel',
+                height: 200, width:200,
+                focused: true, left:2000
+                // incognito, top, left, ...
+            });
 
+            //add a listener to communicate
+            //respond to the handshake with a url
+            /*chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
+              chrome.runtime.sendMessage(
+                  {type: 'adjustData', data:data},
+                  function(response){//DO nothing?? 
+                  });
+            });*/
+          }) 
+    }});
 
-function adjust_window_url(tabId){
-  //alert($( "#" + tabId)
-  alert('mind is ongodng')
-  $(document).ready(function(){
-      console.log('hello')
-      console.log($("*"));
-  });
-  //console.log($(Document).$("[href]"))
-  //$("#dealUrl").href = 'https//:msnbc.com'
-}
-
-function launch_window(url){
-  alert('launch commencing')
+//Launches the popup window with deal information
+//uses a handshake to establish communication with popup.js then adjust its parameters
+function launch_window(data){
   chrome.tabs.create({
             url: chrome.extension.getURL('popup.html'),
             active: false
@@ -44,9 +62,8 @@ function launch_window(url){
             //add a listener to communicate
             //respond to the handshake with a url
             chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
-
               chrome.runtime.sendMessage(
-                  {type: 'adjustData', data:{'url': url}},
+                  {type: 'adjustData', data:data},
                   function(response){//DO nothing?? 
                   });
             });
@@ -54,40 +71,30 @@ function launch_window(url){
   )
 }
 
-/*chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
-
-  alert(message.data)
-  chrome.runtime.sendMessage(
-    {type: 'adjustData', data:{'url': 'https://www.msnbc.com'}},
-    function(response){
-      //DO nothing??  
-    });
-});
-*/
 
 //Function that opens the deals page
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.type === 'open_deals_page') {
-       
-       /* fetch(
-          'https://noahfriedman.pythonanywhere.com/receiver', 
-        { 
-            method: 'POST', 
-            body: JSON.stringify(request.info)
-        }
-      )
-      //.then(launchWindow())
-      */
 
-      $.post('https://noahfriedman.pythonanywhere.com/receiver', JSON.stringify(request.info), 
+      //TEMP
+      payload = {}
+      payload['type'] = 'dealQuery'
+      payload['content'] = request.info
+
+      var d = new Date();
+      payload['logParams'] = {
+        'user': 'Noah',
+        'mode': 'DEV',
+        'time': d.getTime()
+      }
+
+      alert(payload)
+      //POST to server then launch popup window in the callback
+      $.post('https://noahfriedman.pythonanywhere.com/receiver', JSON.stringify(payload), 
         function(data, status){
           data = JSON.parse(data)
-          launch_window(data['url'])
+          launch_window(data)
         })
     }
 });
 
-
-//chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
-//    chrome.tabs.executeScript(null,{file:"popup.js"});
-//});
