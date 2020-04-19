@@ -11,6 +11,7 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
 	    	$(document).ready(function(){
 	    		//change url
 	    		$("#dealUrl").attr("href", data['url']);
+	    		$("#itemPrice").text(data['price']);
 			})
 	}
 
