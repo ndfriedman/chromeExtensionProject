@@ -9,6 +9,14 @@ function getHTML(){
 console.log(getText()); 
 
 
+//TODO these functions probably should live elsewhere
+function getItemNameByXpath() {
+  pathItemName = './/div[@class="a-row breakword"]//span//text()'
+  return document.evaluate(pathItemName, document, null, XPathResult.ANY_TYPE, null).iterateNext().textContent;
+}
+
+function 
+
 //ACTION FUNCTIONS
 //WHEN THE ICON IS CLICKED OPEN THE LOGIN WINDOW
 chrome.runtime.onMessage.addListener(
@@ -19,10 +27,14 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-
 //THIS IS THE CODE THAT RUNS WHEN YOU LAND ON THE PROPER WEBPAGE (AMAZON checkout)
 
-var text = getText(); 
+
+itemName = getItemNameByXpath()
+itemName = itemName.trim();//remove new lines from the item TODO have xpath do this
+itemPrice = 150
+
+/*var text = getText(); 
 
 let reItemName = /Items shipped from Amazon\.com\n(.*)/
 let reItemPrice = /\n\$(.*)/
@@ -34,15 +46,12 @@ var itemPrice = resultItemPrice[1]
 
 console.log(resultItemName)
 
-//alert('You are buying ' + itemName + ' for ' + itemPrice + ' dollars') 
+//alert('You are buying ' + itemName + ' for ' + itemPrice + ' dollars') */
+
+console.log(itemName)
 var items = [{'itemName': itemName, 'price': itemPrice}]
-
+console.log(items)
+alert(JSON.stringify({type:'open_deals_page', info:items}))
 chrome.runtime.sendMessage({type:'open_deals_page', info:items})
-//doWork(itemName, itemPrice);
 
 
-//let re = new RegExp('ab+c')
-//alert(var)
-
-//var firstHref = $("a[href^='http']").eq(0).attr("href");
-//alert(firstHref);
