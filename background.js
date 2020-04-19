@@ -88,11 +88,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         'time': d.getTime()
       }
 
-      alert(payload)
+      ///TEMP CHANGE STUFF
+      alert(request.info)
+      alert(JSON.stringify(payload))
+
       //POST to server then launch popup window in the callback
       $.post('https://noahfriedman.pythonanywhere.com/receiver', JSON.stringify(payload), 
         function(data, status){
           data = JSON.parse(data)
+          alert(JSON.stringify(data))
           launch_window(data)
         })
     }
