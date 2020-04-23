@@ -1,4 +1,5 @@
 
+//IMPORTS
 chrome.browserAction.onClicked.addListener(function(tab) {
   // Send a message to the active tab
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -89,7 +90,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       }
 
       ///TEMP CHANGE STUFF
-      alert(request.info)
       alert(JSON.stringify(payload))
 
       //POST to server then launch popup window in the callback
@@ -101,4 +101,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         })
     }
 });
+
+
 
