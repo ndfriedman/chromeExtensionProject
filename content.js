@@ -74,8 +74,30 @@ function find_item_and_query(mode){
 function query_from_item_page(){
 
   var title = document.getElementById('productTitle');
-  htmlToInsert = '<input type="button" id="queryDbButton" value="Check ITEM PRICE"/>'
+  
+  htmlToInsert = `
+                  <a href="#" data-toggle="popover" title="Popover Header"
+                  data-content="a message">Toggle popover</a>
+                  `
   title.insertAdjacentHTML('afterend', htmlToInsert);
+
+
+  $('[data-toggle="popover"]').popover({
+    html: true,
+    //content : function() {
+    //    return loadContent($(this).data('popup.html'))
+    //},
+    placement : 'top',
+    trigger : 'hover'
+  });
+  //title.insertAdjacentHTML('afterend', htmlToInsert);
+
+  //LOAD THE BOOTSTRAP POPOVER STUFF HERE
+  //insert_script_element('script', 'jquery-3.4.1.js')
+  //insert_script_element('script', 'Popper.js')
+  //insert_script_element('script', 'bootstrap-4.3.1-dist/js/bootstrap.min.js')
+  //var $j = jQuery.noConflict();
+  //$('[data-toggle="popover"]').popover();
 
   $(function(){ //Set an on click action for when we click the query page to open stuff up
     $('#queryDbButton').on('click',function(){
@@ -84,27 +106,20 @@ function query_from_item_page(){
   });
 
 
-  /*var script = document.createElement('script');
-  script.src = 'https://code.jquery.com/jquery-3.4.1.min.js';
-  script.type = 'text/javascript';
-  document.getElementsByTagName('head')[0].appendChild(script);
-
-  var popoverHtml = '<a href="#" data-toggle="popover" title="Popover Header" data-content="Some content inside the popover">Toggle popover</a>'
-  span = document.getElementsByClassName('MediaMatrix')[0];
-  span.insertAdjacentHTML( 'beforeend', popoverHtml);*/
 }
 
 //THIS IS THE CODE THAT RUNS WHEN YOU LAND ON THE PROPER WEBPAGE (AMAZON checkout)
-
-var href = window.location.href
-varCheckoutPageStr = 'https://www.amazon.com/gp/buy'
-if(~href.indexOf(varCheckoutPageStr)){
-  find_item_and_query(mode='checkout')
-}
-else{
-  //TODO only trigger this on specific amazon pages, with different logic for each
-  query_from_item_page()
-}
+$(document).ready(function(){
+  var href = window.location.href
+  varCheckoutPageStr = 'https://www.amazon.com/gp/buy'
+  if(~href.indexOf(varCheckoutPageStr)){
+    find_item_and_query(mode='checkout')
+  }
+  else{
+    //TODO only trigger this on specific amazon pages, with different logic for each
+    query_from_item_page()
+  }
+})
 
 
 
