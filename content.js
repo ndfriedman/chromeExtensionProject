@@ -69,44 +69,96 @@ function find_item_and_query(mode){
   chrome.runtime.sendMessage({type:'open_deals_page', info:items})
 }
 
-//ACTUALLY set up a popover 
-//currently just sets up a clickable button
-function query_from_item_page(){
+//function to insert html code to intialize the popover on the webpage
 
-  var title = document.getElementById('productTitle');
-  
-  htmlToInsert = `
-                  <a href="#" data-toggle="popover" title="Popover Header"
-                  data-content="a message">Toggle popover</a>
-                  `
-  title.insertAdjacentHTML('afterend', htmlToInsert);
+function initialize_modal(html, data){
 
+ // find_item_and_query('productPage')
 
-  $('[data-toggle="popover"]').popover({
-    html: true,
-    //content : function() {
-    //    return loadContent($(this).data('popup.html'))
-    //},
-    placement : 'top',
-    trigger : 'hover'
-  });
-  //title.insertAdjacentHTML('afterend', htmlToInsert);
+  let title = document.getElementById('productTitle');
 
-  //LOAD THE BOOTSTRAP POPOVER STUFF HERE
-  //insert_script_element('script', 'jquery-3.4.1.js')
-  //insert_script_element('script', 'Popper.js')
-  //insert_script_element('script', 'bootstrap-4.3.1-dist/js/bootstrap.min.js')
-  //var $j = jQuery.noConflict();
-  //$('[data-toggle="popover"]').popover();
+  title.insertAdjacentHTML('afterend', html);
 
-  $(function(){ //Set an on click action for when we click the query page to open stuff up
-    $('#queryDbButton').on('click',function(){
-        find_item_and_query(mode='productPage')
-    });
-  });
+  var modal = 
+   document.getElementById("myModal");
 
+   // Get the button that opens the modal
+  var btn = document.getElementById("myBtn");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks the button, open the modal 
+  btn.onmouseover = function() {
+    modal.style.display = "block";
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
 
 }
+
+function extract_item_info_from_page(){
+  //promisified to allow for sequential operation
+  return new Promise((resolve, reject) => {
+    itemName = getItemNameByXpath('productPage')
+    itemName = normalizeItemName(itemName)
+    itemPrice = getItemPriceByXpath('productPage')
+    itemPrice = normalizeItemPrice(itemPrice)
+    var items = [{'itemName': itemName, 'price': itemPrice}]
+    resolve(items)
+  })
+}
+
+//makes a post request to the database
+function post_request_to_database(info, dbUrl='https://noahfriedman.pythonanywhere.com/receiver'){
+
+  //this whole function returns a promise so we can operate sequentially to render the webpage
+  return new Promise((resolve, reject) => {
+    payload = {}
+    payload['type'] = 'dealQuery'
+    payload['content'] = info
+
+    var d = new Date();
+    payload['logParams'] = {
+      'user': 'Noah',
+      'mode': 'DEV',
+      'time': d.getTime()
+    }
+
+    $.post(dbUrl, JSON.stringify(payload)).then(
+      res => resolve(JSON.parse(res))
+    ) 
+  })
+}
+
+
+//omnibus function: extracts our current item name, queries database, then sets up the popover
+function query_from_item_page(){
+
+  extract_item_info_from_page().then(
+    res => post_request_to_database(res).then(
+      function(res){
+        //to load the html from a file into a variable called html we need to use chrome runtime send message
+        chrome.runtime.sendMessage({cmd: "read_file", path:'module.html'}, function(html){
+        initialize_modal(html, res)
+      });
+    })
+  )
+  
+}
+
+
+
 
 //THIS IS THE CODE THAT RUNS WHEN YOU LAND ON THE PROPER WEBPAGE (AMAZON checkout)
 $(document).ready(function(){
@@ -122,4 +174,43 @@ $(document).ready(function(){
 })
 
 
+
+/*$(function(){ //Set an on click action for when we click the query page to open stuff up
+    $('#queryDbButton').on('click',function(){
+        find_item_and_query(mode='productPage')
+    });
+  });*/
+
+
+
+//DEPRECATED CODE
+
+/*function initialize_popover(popoverHtml){
+    alert(popoverHtml)
+    var title = document.getElementById('productTitle');
+    htmlToInsert = `
+                  <a href="#" data-html="true" data-toggle="popover" title="Popover Header"
+                  data-content= "${popoverHtml}"> Toggle popover</a>
+                  `
+    title.insertAdjacentHTML('afterend', htmlToInsert);
+
+    $('[data-toggle="popover"]').popover({
+      html: true,
+      //content : function() {
+      //    return loadContent($(this).data('popup.html'))
+      //},
+      placement : 'top',
+      trigger : 'hover'
+    });
+}*/
+
+
+  //title.insertAdjacentHTML('afterend', htmlToInsert);
+
+  //LOAD THE BOOTSTRAP POPOVER STUFF HERE
+  //insert_script_element('script', 'jquery-3.4.1.js')
+  //insert_script_element('script', 'Popper.js')
+  //insert_script_element('script', 'bootstrap-4.3.1-dist/js/bootstrap.min.js')
+  //var $j = jQuery.noConflict();
+  //$('[data-toggle="popover"]').popover();
 
