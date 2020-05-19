@@ -10,8 +10,7 @@
 	      "https://www.amazon.com/*"
 	    ],
 	    "js": ["jquery-3.4.1.js", "content.js", "Popper.js", "bootstrap-4.3.1-dist/js/bootstrap.min.js"],
-      "css":["bootstrap-4.3.1-dist/css/bootstrap.min.css"],
-      "html": ["popup.html"]
+      "css":["bootstrap-4.3.1-dist/css/bootstrap.min.css"]
 	  }
 	],
   "permissions": [
@@ -29,7 +28,8 @@
    "web_accessible_resources": [
       "bootstrap-4.3.1-dist/css/bootstrap.min.css",
       "Popper.js",
-      "bootstrap-4.3.1-dist/js/bootstrap.min.js"    
+      "bootstrap-4.3.1-dist/js/bootstrap.min.js",
+      "popup.html"    
    ]
 }
 
