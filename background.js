@@ -103,4 +103,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 
+///LISTENER FOR LOADING HTML PAGES
+//THIS LISTENER CAN GET HTML CONTENT FROM EXTENSION DATA AND RETURN IT TO CONTENT.JS etc
+//THIS IS CONFUSING AS FUCLLLLL
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if(request.cmd == "read_file") {
+        $.ajax({
+            url: chrome.extension.getURL(request.path),
+            dataType: "html",
+            success: sendResponse
+        });
+        return true;
+    }
+})
+
+
 
